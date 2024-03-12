@@ -8,12 +8,30 @@ import { createPopulation, updatePopulation } from "./diseaseModel";
 import { LineChart, Line, YAxis, XAxis } from "recharts";
 
 const Patient: FC<{ patient: Patient }> = ({ patient }) => {
+
+const getFace = () => {
+if (patient.infected == false) {
+  if (patient.vaccinated == false) {
+
+    return "😀"
+  } else {
+    return "😎"
+  }
+  
+} 
+else {
+return "🤢"
+
+}
+
+}
+
   return (
     <div
       className="patient"
       style={{ left: `${patient.x}%`, top: `${patient.y}%` }}
     >
-      {patient.infected ? "🤢" : "😀"}
+      {getFace()}
     </div>
   );
 };
@@ -55,6 +73,34 @@ const Settings: FC<{
             setParameters({
               ...parameters,
               infectionChance: parseFloat(e.target.value),
+            })
+          }
+        />
+      </div>
+      <div>
+        <label>Vaccination Rate:</label>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={parameters.vaccinationRate}
+          onChange={(e) =>
+            setParameters({
+              ...parameters,
+              vaccinationRate: parseFloat(e.target.value),
+            })
+          }
+        />
+        <input
+          type="number"
+          min="0"
+          max="100"
+          value={parameters.vaccinationRate}
+          onChange={(e) =>
+            setParameters({
+              ...parameters,
+              vaccinationRate: parseFloat(e.target.value),
             })
           }
         />
@@ -134,6 +180,7 @@ const App: FC = () => {
         value={popSize}
         onChange={onPopInput}
       />
+      
       <button onClick={resetPopulation}>Reset Population</button>
       <Settings parameters={simulationParameters} setParameters={setSimulationParameters} />
       <section className="side-by-side">
