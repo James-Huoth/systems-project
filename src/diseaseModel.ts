@@ -38,7 +38,7 @@ const updatePatient = (
   }   
 
   }  else {
-    let randomNumber = Math.floor(Math.random() * 100)
+    let randomNumber = Math.floor(Math.random() * 1000)
 console.log(randomNumber ,params.vaccinationRate)
   if(randomNumber < params.vaccinationRate) {
 
