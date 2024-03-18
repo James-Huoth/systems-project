@@ -6,11 +6,14 @@ export const createPopulation = (size = 1600) => {
   const sideSize = Math.sqrt(size);
   for (let i = 0; i < size; i++) {
     population.push({
+      timeElasped: 0,
       id: i,
       x: (100 * (i % sideSize)) / sideSize, // X-coordinate within 100 units
       y: (100 * Math.floor(i / sideSize)) / sideSize, // Y-coordinate scaled similarly
       infected: false,
+      infectionTime: 0,
       vaccinated: false,
+      deceased: false,
     });
   }
   // Infect patient zero...
@@ -28,18 +31,37 @@ const updatePatient = (
   params: SimulationParameters
 ): Patient => {
   let updatedPatient = { ...patient };
+  updatedPatient = { ...patient, timeElasped: patient.timeElasped + 1 };
+  
   // IF we are NOT sick, see if our neighbors are sick...
   // choose a partner
   const partner = population[Math.floor(Math.random() * population.length)];
-  if (patient.vaccinated == true) {
-       if (partner.infected && 100*Math.random() < params.infectionChance/4) {       
+  let recoveryTime = 2
+
+if(partner.infected == true && patient.timeElasped - patient.infectionTime > recoveryTime) {
+
+  let chance = Math.floor(Math.random() * 100)
+
+  if (chance >= 50) {
+      updatedPatient = { ...patient, infected : false, infectionTime: 0, vaccinated : true,};
       
-    updatedPatient = { ...patient, infected : true };
+  }else {
+    updatedPatient = { ...patient, infected : false, infectionTime: 0, deceased : true,};
+  }
+
+
+}
+
+if(partner.deceased == false) {
+  if (patient.vaccinated == true) {
+       if (partner.infected && 100*Math.random() < params.infectionChance/10) {       
+      
+    updatedPatient = { ...patient, infected : true, infectionTime: patient.timeElasped };
   }   
 
   }  else {
     let randomNumber = Math.floor(Math.random() * 1000)
-console.log(randomNumber ,params.vaccinationRate)
+
   if(randomNumber < params.vaccinationRate) {
 
 updatedPatient = { ...patient, vaccinated : true };
@@ -47,10 +69,15 @@ updatedPatient = { ...patient, vaccinated : true };
   }
     if (partner.infected && 100*Math.random() < params.infectionChance) {       
       
-      updatedPatient = { ...patient, infected : true };
+      updatedPatient = { ...patient, infected : true, infectionTime: patient.timeElasped };
     }   
   }
- 
+}
+
+
+
+
+
   
   
   

@@ -5,12 +5,13 @@ import {
   type SimulationParameters,
 } from "./types";
 import { createPopulation, updatePopulation } from "./diseaseModel";
-import { LineChart, Line, YAxis, XAxis } from "recharts";
+import { LineChart, Line, YAxis, XAxis, Legend } from "recharts";
 
 const Patient: FC<{ patient: Patient }> = ({ patient }) => {
 
 const getFace = () => {
-if (patient.infected == false) {
+  if (patient.deceased == false) {
+    if (patient.infected == false) {
   if (patient.vaccinated == false) {
 
     return "😀"
@@ -23,6 +24,10 @@ else {
 return "🤢"
 
 }
+
+  } else {
+  return "💀"
+  }
 
 }
 
@@ -38,7 +43,8 @@ return "🤢"
 
 type DataPoint = {
   infected: number;
-  newInfections: number;
+  vaccinations: number ;
+  deaths: number ;
   total: number;
   round: number;
 };
@@ -114,7 +120,7 @@ const App: FC = () => {
   const [population, setPopulation] = useState<Patient[]>(
     createPopulation(1600)
   );
-  const [lineToGraph, setLineToGraph] = useState<"infected" | "newInfections">(
+  const [lineToGraph, setLineToGraph] = useState<"infected" | "vaccinations" | "deaths">(
     "infected"
   );
   const [diseaseData, setDiseaseData] = useState<DataPoint[]>([]);
@@ -125,13 +131,16 @@ const App: FC = () => {
   useEffect(() => {
     // Each time the population changes, we add an item to our disease...
     let infectedCount = population.filter((p) => p.infected).length;
+    let vaccinatedCount = population.filter((p) => p.vaccinated).length;
+    let deathCount = population.filter((p) => p.deceased).length;
     let oldInfectedCount =
       diseaseData.length > 0 ? diseaseData[diseaseData.length - 1].infected : 0;
     setDiseaseData([
       ...diseaseData,
       {
         infected: infectedCount,
-        newInfections: infectedCount - oldInfectedCount,
+        vaccinations: vaccinatedCount,
+        deaths: deathCount,
         total: population.length,
         round: diseaseData.length,
       },
@@ -147,6 +156,7 @@ const App: FC = () => {
   };
 
   const resetPopulation = () => {
+    setAutoMode(false)
     setPopulation(createPopulation(popSize * popSize));
     setDiseaseData([]);
   };
@@ -161,16 +171,18 @@ const App: FC = () => {
   useEffect(() => {
     if (autoMode) {
       console.log("Automatically run the next one in a half a sec");
-      setTimeout(runTurn, 500);
+      setTimeout(runTurn, 250);
     }
   }, [autoMode, population]);
 
   return (
     <div>
       <h1>My Systems Model</h1>
-      Population: {population.length}. Infected:{" "}
+      Population: {population.length}. Infected:{" "} 
       {population.filter((p) => p.infected).length}
-      <button onClick={runTurn}>Next turn...</button>
+       . Vaccinated: {""}
+      {population.filter((p) => p.vaccinated).length}  .
+      <button onClick={runTurn} disabled={autoMode}>Next turn...</button>
       <button onClick={autoRun}>AutoRun</button>
       <button onClick={stop}>Stop</button>
       <input
@@ -186,17 +198,23 @@ const App: FC = () => {
       <section className="side-by-side">
         <div className="chartContainer">
           <LineChart data={diseaseData} width={400} height={400}>
+          <Legend verticalAlign="top" height={36}/>
             <YAxis />
             <XAxis />
             <Line type="monotone" dataKey={lineToGraph} stroke="#f00" />
+            <Line type="monotone" dataKey={"vaccinations"} stroke="#3ff" />
+            <Line type="monotone" dataKey={"deaths"} stroke="#000" />
           </LineChart>
-          <button onClick={() => setLineToGraph("infected")}>
-            Total Infected
-          </button>
-          <button onClick={() => setLineToGraph("newInfections")}>
-            New Infections
-          </button>
+         </div>
+
+         <div className="emojiKey">
+          <h1>Key:</h1> 
+          <p>Healthy=😀</p>
+          <p>Vaccinated=😎</p>
+          <p>Sick=🤢</p> 
+          <p>Dead=💀</p>
         </div>
+       
         <div className="world">
           {population.map((patient) => (
             <Patient key={patient.id} patient={patient} />
