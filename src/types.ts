@@ -12,12 +12,12 @@ export type Patient = {
 export type SimulationParameters = {  
   infectionChance: number;
   vaccinationRate: number;
+  deathChance: number;
 };
 
 export const defaultSimulationParameters: SimulationParameters = {
-  distanceThreshold: 5,
-  movement: 5,
   infectionChance: 5,
-  vaccinationChance: 50,
+  vaccinationRate: 5,
+  deathChance: 5,
 };
 

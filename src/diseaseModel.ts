@@ -38,21 +38,24 @@ const updatePatient = (
   const partner = population[Math.floor(Math.random() * population.length)];
   let recoveryTime = 2
 
-if(partner.infected == true && patient.timeElasped - patient.infectionTime > recoveryTime) {
+
+
+if(partner.deceased == false) {
+
+  if(partner.infected == true && patient.timeElasped - patient.infectionTime > recoveryTime) {
 
   let chance = Math.floor(Math.random() * 100)
-
-  if (chance >= 50) {
+console.log(params.deathChance,chance)
+  if (chance > params.deathChance) {
       updatedPatient = { ...patient, infected : false, infectionTime: 0, vaccinated : true,};
       
   }else {
-    updatedPatient = { ...patient, infected : false, infectionTime: 0, deceased : true,};
+    console.log("Person Died" + chance/params.deathChance * 100)
+    updatedPatient = { ...patient, infected : false, infectionTime: 0, deceased : true, vaccinated : false,};
   }
 
 
 }
-
-if(partner.deceased == false) {
   if (patient.vaccinated == true) {
        if (partner.infected && 100*Math.random() < params.infectionChance/10) {       
       

@@ -102,11 +102,41 @@ const Settings: FC<{
           type="number"
           min="0"
           max="100"
+          step="1"
           value={parameters.vaccinationRate}
           onChange={(e) =>
             setParameters({
               ...parameters,
               vaccinationRate: parseFloat(e.target.value),
+            })
+          }
+        />
+      </div>
+      <div>
+        <label>Death Chance:</label>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={parameters.deathChance}
+          onChange={(e) =>
+            setParameters({
+              ...parameters,
+              deathChance: parseFloat(e.target.value),
+            })
+          }
+        />
+        <input
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          value={parameters.deathChance}
+          onChange={(e) =>
+            setParameters({
+              ...parameters,
+              deathChance: parseFloat(e.target.value),
             })
           }
         />
@@ -181,7 +211,8 @@ const App: FC = () => {
       Population: {population.length}. Infected:{" "} 
       {population.filter((p) => p.infected).length}
        . Vaccinated: {""}
-      {population.filter((p) => p.vaccinated).length}  .
+      {population.filter((p) => p.vaccinated).length}
+. Deaths: {population.filter((p) => p.deceased).length}        .
       <button onClick={runTurn} disabled={autoMode}>Next turn...</button>
       <button onClick={autoRun}>AutoRun</button>
       <button onClick={stop}>Stop</button>
@@ -231,7 +262,7 @@ const App: FC = () => {
           <tr>
             <td>{dataPoint.round}</td>
             <td>{dataPoint.infected}</td>
-            <td>{dataPoint.newInfections}</td>
+           
           </tr>
         ))}
       </table>
